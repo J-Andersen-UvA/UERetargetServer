@@ -275,8 +275,6 @@ class Retargeter:
 
         IKRetargeter.retarget_animations(retarget_path, animation_path)
         self.export_fbx_animation([animation_path, self.export_path, f"{animation_name}_{source_rig_name}_to_{target_rig_name}"])
-        # self.queue.enqueue(self.send_file, [f"{self.export_path}{animation_name}_{source_rig_name}_to_{target_rig_name}.fbx", self.current_connection])
-        # self.send_file(f"{self.export_path}{animation_name}_{source_rig_name}_to_{target_rig_name}.fbx", self.current_connection)
 
     def close_server(self):
         # Close the server socket
@@ -315,6 +313,8 @@ class Retargeter:
             if len(parts) < 2:
                 self.send_response(connection, "Invalid message format, missing ':'")
                 raise ValueError("Invalid message format, missing ':'")
+
+            self.send_response(connection, "Received message", no_close=True)
 
             message_type = parts[0]
             message_content = parts[1]
