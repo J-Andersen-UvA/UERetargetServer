@@ -332,6 +332,7 @@ class Retargeter:
                 data = file.read()
                 connection.sendall(data)
             print(f"Sent file: {filepath} to {connection}")
+            connection.sendall(b"EOF")
         except Exception as e:
             print(f"Failed to send file: {e}")
             raise e
