@@ -30,11 +30,14 @@ def create_retargeter(source_rig_path : str, target_rig_path : str, rtg_name : s
     # Check if the retargeter already exists
     existing_retargeter = unreal.EditorAssetLibrary.load_asset('/Game/Retargets/' + rtg_name)
     if existing_retargeter:
-            unreal.EditorAssetLibrary.delete_asset(existing_retargeter.get_path_name())
+        unreal.EditorAssetLibrary.delete_asset(existing_retargeter.get_path_name())
 
+    print("Creating retargeter...")
     # Create the RTG
     rtg = asset_tools.create_asset(asset_name=rtg_name, package_path='/Game/Retargets', asset_class=unreal.IKRetargeter, factory=unreal.IKRetargetFactory())
     rtg_controller = unreal.IKRetargeterController.get_controller(rtg)
+    
+    print("Setting IK rigs...")
     rtg_controller.set_ik_rig(unreal.RetargetSourceOrTarget.SOURCE, source_rig)
     rtg_controller.set_ik_rig(unreal.RetargetSourceOrTarget.TARGET, target_rig)
 
