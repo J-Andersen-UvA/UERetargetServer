@@ -48,6 +48,7 @@ def create_retargeter(source_rig_path : str, target_rig_path : str, rtg_name : s
     # Auto align bones
     rtg_controller.auto_align_all_bones(unreal.RetargetSourceOrTarget.SOURCE)
 
+    print(f"Retargeter created at /Game/Retargets/{rtg_name}.")
     return True
 
 # Helper function to convert AnimSequence to AssetData
