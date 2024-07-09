@@ -499,10 +499,10 @@ class Retargeter:
 # Example usage
 retargeter = Retargeter()
 retargeter.start()
-retargeter.start_websocket_server()
 
 # Keep the program running until user interrupts or signals to stop
 try:
+    asyncio.run(retargeter.start_websocket_server())
     while True:
         # Keep the main thread alive
         unreal.idle()
