@@ -1,5 +1,6 @@
 import socket
 import pip._vendor.requests as requests
+import os
 
 def open_listen_socket(host='0.0.0.0', port=8071, accept_timeout=10):
     # Create a socket object
@@ -60,8 +61,14 @@ def download_file_from_url(url, save_path):
         with open(save_path + file_name, 'wb') as file:
             for chunk in response.iter_content(chunk_size=8192):
                 file.write(chunk)
+        file.close()
+        
+        # Check if the file was downloaded successfully
+        if not os.path.isfile(save_path + file_name):
+            print(f"File {file_name} not found in the specified path.")
+            return False
+        
         print(f'File downloaded successfully and saved to {save_path}')
-
         return True
     except requests.RequestException as e:
         print(f"An error occurred while downloading the file: {e}")
