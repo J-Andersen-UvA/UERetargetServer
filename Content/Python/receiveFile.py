@@ -67,12 +67,12 @@ def download_file_from_url(url, save_path):
         if not os.path.isfile(save_path + file_name):
             print(f"File {file_name} not found in the specified path.")
             return False
-        
-        print(f'File downloaded successfully and saved to {save_path}')
-        return True
     except requests.RequestException as e:
         print(f"An error occurred while downloading the file: {e}")
         return False
+    finally:
+        print(f'File downloaded successfully and saved to {save_path + file_name}')
+        return True
 
 if __name__ == "__main__":
     import_path = "/path/to/save/files/"  # Adjust to your import path
