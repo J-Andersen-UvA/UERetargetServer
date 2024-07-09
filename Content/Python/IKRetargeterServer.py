@@ -367,11 +367,13 @@ class Retargeter:
         # Handle data received from client
         try:
             # Decode the byte string into a regular string
-            data_str = data.decode('utf-8')
-            print(f"Decoded data: {data_str}")
+            if self.fetch_server_type() != "WebSocket":
+                data_str = data.decode('utf-8')
+                print(f"Decoded data: {data_str}")
+                data = data_str
 
             # Split the decoded string into parts
-            parts = data_str.split(':', 1)
+            parts = data.split(':', 1)
             if len(parts) < 2:
                 self.send_response(connection, "Invalid message format, missing ':'")
                 raise ValueError("Invalid message format, missing ':'")
@@ -382,7 +384,8 @@ class Retargeter:
 
             print(f"Message type: {message_type}")
             print(f"Message content: {message_content}")
-            print(f"Client: {self.current_connection}")
+            if self.fetch_server_type() != "WebSocket":
+                print(f"Client: {self.current_connection}")
 
             # Define message handlers
             message_handlers = {
@@ -456,6 +459,7 @@ class Retargeter:
         """
         thread_local = threading.local()
         thread_local.serverType = "TCP"
+
         try:
             while True:
                 data = connection.recv(1024)
@@ -503,11 +507,22 @@ class Retargeter:
         try:
             # Handle WebSocket data here
             print(f"Received WebSocket data: {data}")
+            self.handle_data(data, websocket)
             await websocket.send("Received WebSocket data")
         except Exception as e:
             print(f"Error handling WebSocket data: {e}")
 
+    async def send_response_websocket(self, websocket, message):
+        try:
+            await websocket.send(message)
+        except Exception as e:
+            print(f"Error sending response: {e}")
+
     def send_response(self, connection, message, no_close=False):
+        if self.fetch_server_type() == "WebSocket":
+            asyncio.run(self.send_response_websocket(connection, message))
+            return
+
         try:
             connection.sendall(message.encode('utf-8'))
         except Exception as e:
@@ -519,6 +534,12 @@ class Retargeter:
 
     def tick(self, delta_time):
         pass
+
+    def fetch_server_type(self):
+        current_thread = threading.current_thread()
+        server_type = getattr(current_thread, 'thread_local', None).serverType if hasattr(current_thread, 'thread_local') else None
+        return server_type
+
 
 # Example usage
 retargeter = Retargeter()
