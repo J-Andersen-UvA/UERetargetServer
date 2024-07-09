@@ -538,8 +538,10 @@ class Retargeter:
         pass
 
     def fetch_server_type(self):
+        print("Fetching server type...")
         current_thread = threading.current_thread()
         server_type = getattr(current_thread, 'thread_local', None).serverType if hasattr(current_thread, 'thread_local') else None
+        print("Server type:", server_type)
         return server_type
 
 
