@@ -442,6 +442,8 @@ class Retargeter:
         The method listens for client connections and handles them in separate threads.
         Especially for the file transfer we need to be able to handle multiple connections at the same time.
         """
+        self.thread_local.serverType = "TCP"
+
         while self.running and self.socket:
             try:
                 connection, client_address = self.socket.accept()
@@ -477,6 +479,8 @@ class Retargeter:
 
     # We will use this method to handle WebSocket data
     def start_websocket_server(self, host="0.0.0.0", port=8069):
+        self.thread_local.serverType = "WebSocket"
+
         def run_server():
             self.thread_local.serverType = "WebSocket"
 
