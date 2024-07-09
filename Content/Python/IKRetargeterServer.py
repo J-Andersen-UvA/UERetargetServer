@@ -65,6 +65,9 @@ class Retargeter:
         if os.path.exists("/.dockerenv"):
             self.export_path = "/usr/src/your_project/exports/"  # Update with Docker export path
             self.import_path = "/usr/src/your_project/imports/"  # Update with Docker import path
+        
+        self.thread_local = threading.local()
+
 
     def start(self, host="0.0.0.0", port=8070):
         self.running = True
@@ -250,8 +253,7 @@ class Retargeter:
         receive_thread.start()
 
     def handle_fbx_receive(self, connection, filename, host='0.0.0.0'):
-        thread_local = threading.local()
-        thread_local.serverType = "TCP"
+        self.thread_local.serverType = "TCP"
 
         port = self.get_free_port()
         if port is None:
@@ -457,8 +459,7 @@ class Retargeter:
         """
         This method handles client data.
         """
-        thread_local = threading.local()
-        thread_local.serverType = "TCP"
+        self.thread_local.serverType = "TCP"
 
         try:
             while True:
@@ -475,8 +476,7 @@ class Retargeter:
     # We will use this method to handle WebSocket data
     def start_websocket_server(self, host="0.0.0.0", port=8069):
         def run_server():
-            thread_local = threading.local()
-            thread_local.serverType = "WebSocket"
+            self.thread_local.serverType = "WebSocket"
 
             loop = asyncio.new_event_loop()
             asyncio.set_event_loop(loop)
@@ -542,14 +542,6 @@ class Retargeter:
         current_thread = threading.current_thread()
         server_type = getattr(current_thread, 'thread_local', None).serverType if hasattr(current_thread, 'thread_local') else None
         print("Server type:", server_type)
-
-        def print_thread_attributes():
-            current_thread = threading.current_thread()
-            attributes = dir(current_thread)
-            for attribute in attributes:
-                print(attribute)
-
-        print_thread_attributes()
         return server_type
 
 
