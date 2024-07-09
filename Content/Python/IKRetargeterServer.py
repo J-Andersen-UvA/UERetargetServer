@@ -314,6 +314,20 @@ class Retargeter:
         print("Fetching files in folder:", folder_path)
         self.queue.enqueue(fetchUEInfo.fetch_all_assets_in_path, [folder_path])
 
+    def download_from_url(self, url, destination_path=""):
+        if url == "":
+            self.send_response(self.current_connection, "Invalid message format, missing argument(s). Expecting: url, destination_path (optional)")
+            raise ValueError("Invalid message format, missing argument(s). Expecting: url, destination_path (optional)")
+
+        if destination_path == "":
+            destination_path = self.import_path
+
+        print(f"Downloading file from URL: {url}")
+        if receiveFile.download_file_from_url(url, destination_path):
+            self.send_response(self.current_connection, f"File downloaded successfully path({destination_path}).")
+        else:
+            self.send_response(self.current_connection, "Failed to download file.")
+
     def close_server(self):
         # Close the server socket
         if self.socket:
@@ -367,6 +381,7 @@ class Retargeter:
                 "asset_exists": self.asset_exists,
                 "import_fbx": self.import_fbx,
                 "import_fbx_animation": self.import_fbx_animation,
+                "import_fbx_from_url": self.download_from_url,
                 "retarget_ik_rigs": self.retarget_ik_rigs,
                 "fetch_ik_rigs": self.fetch_ik_rigs,
                 "fetch_retargets": self.fetch_retargets,

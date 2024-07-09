@@ -1,4 +1,5 @@
 import socket
+import requests
 
 def open_listen_socket(host='0.0.0.0', port=8071, accept_timeout=10):
     # Create a socket object
@@ -49,6 +50,21 @@ def receive_file(filepath, server_socket, recv_timeout=5):
         server_socket.close()
         if 'client_socket' in locals():
             client_socket.close()
+
+def download_file_from_url(url, save_path):
+    try:
+        response = requests.get(url, stream=True)
+        response.raise_for_status()
+
+        with open(save_path, 'wb') as file:
+            for chunk in response.iter_content(chunk_size=8192):
+                file.write(chunk)
+        print(f'File downloaded successfully and saved to {save_path}')
+
+        return True
+    except requests.RequestException as e:
+        print(f"An error occurred while downloading the file: {e}")
+        return False
 
 if __name__ == "__main__":
     import_path = "/path/to/save/files/"  # Adjust to your import path
