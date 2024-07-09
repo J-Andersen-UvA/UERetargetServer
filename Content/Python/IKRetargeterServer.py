@@ -116,17 +116,16 @@ class Retargeter:
         if (self.queue.size() > 0):
             # Dequeue the item from the queue
             dequeued_item = self.queue.dequeue()
-            
-            if len(dequeued_item) == 2:
-                func, args = dequeued_item
+
+            if isinstance(dequeued_item, simpleQueue.QueueItem):
+                func = dequeued_item.func
+                args = dequeued_item.args
+                connection = dequeued_item.connection
+                self.thread_local.serverType = dequeued_item.connection_type
                 unreal.log(f"Calling function {func.__name__} with arguments: {args}")
-            elif len(dequeued_item) == 3:
-                func, args, connection = dequeued_item
-                unreal.log(f"Calling function {func.__name__} with arguments: {args}")
-                # Use 'connection' if needed
             else:
-                # Handle unexpected case where length is not 2 or 3
-                unreal.log_error("Unexpected number of values returned from queue.dequeue()")
+                # Handle unexpected case where dequeued_item is not an instance of QueueItem
+                unreal.log_error("Unexpected item type returned from queue.dequeue()")
 
             if func == fetchUEInfo.fetch_ik_rigs:
                 result = func(args)
