@@ -53,7 +53,7 @@ def receive_file(filepath, server_socket, recv_timeout=5):
 
 def download_file_from_url(url, save_path):
     try:
-        response = requests.get(url, stream=True)
+        response = requests.get(url, stream=True, verify=False)
         response.raise_for_status()
 
         with open(save_path, 'wb') as file:
