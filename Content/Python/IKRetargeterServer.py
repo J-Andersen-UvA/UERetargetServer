@@ -12,6 +12,7 @@ import receiveFile
 import functools
 import os
 import websockets
+import asyncio
 
 class Retargeter:
     """
@@ -464,22 +465,37 @@ class Retargeter:
 
     # We will use this method to handle WebSocket data
     def start_websocket_server(self, host="0.0.0.0", port=8069):
-        def handle_websocket(websocket, path):
-            try:
-                for message in websocket:
-                    self.handle_websocket_data(message, websocket)
-            except Exception as e:
-                print(f"Error in WebSocket handler: {e}")
+        def run_server():
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+            
+            async def handle_websocket(websocket, path):
+                try:
+                    async for message in websocket:
+                        await self.handle_websocket_data(message, websocket)
+                except Exception as e:
+                    print(f"Error in WebSocket handler: {e}")
 
-        start_websocket_thread = threading.Thread(target=websockets.serve, args=(handle_websocket, host, port))
-        start_websocket_thread.start()
+            async def start_server():
+                server = await websockets.serve(handle_websocket, host, port)
+                print(f"WebSocket server listening on ws://{host}:{port}")
+
+                # Keep the server running until the thread is stopped
+                await server.wait_closed()
+
+            # Run the asyncio event loop
+            loop.run_until_complete(start_server())
+
+        # Start the server in a new thread
+        server_thread = threading.Thread(target=run_server)
+        server_thread.start()
         print(f"WebSocket server listening on ws://{host}:{port}")
 
-    def handle_websocket_data(self, data, websocket):
+    async def handle_websocket_data(self, data, websocket):
         try:
             # Handle WebSocket data here
             print(f"Received WebSocket data: {data}")
-            websocket.send("Received WebSocket data")
+            await websocket.send("Received WebSocket data")
         except Exception as e:
             print(f"Error handling WebSocket data: {e}")
 
