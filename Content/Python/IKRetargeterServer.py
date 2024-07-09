@@ -512,15 +512,17 @@ class Retargeter:
         except Exception as e:
             print(f"Error handling WebSocket data: {e}")
 
-    async def send_response_websocket(self, websocket, message):
+    async def send_response_websocket(self, websocket, message, no_close=False):
         try:
             await websocket.send(message)
+            if not no_close:
+                await websocket.close()
         except Exception as e:
             print(f"Error sending response: {e}")
 
     def send_response(self, connection, message, no_close=False):
         if self.fetch_server_type() == "WebSocket":
-            asyncio.run(self.send_response_websocket(connection, message))
+            asyncio.run(self.send_response_websocket(connection, message, no_close))
             return
 
         try:
