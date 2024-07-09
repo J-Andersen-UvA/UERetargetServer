@@ -323,7 +323,7 @@ class Retargeter:
     def fetch_files(self, folder_path):
         # Fetch all files in the specified folder
         print("Fetching files in folder:", folder_path)
-        self.queue.enqueue(fetchUEInfo.fetch_all_assets_in_path, [folder_path])
+        self.queue.enqueue(fetchUEInfo.fetch_all_assets_in_path, [folder_path], connection_type=self.fetch_server_type())
 
     def download_from_url(self, url, destination_path=""):
         if url == "":
