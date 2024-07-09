@@ -55,8 +55,9 @@ def download_file_from_url(url, save_path):
     try:
         response = requests.get(url, stream=True, verify=False)
         response.raise_for_status()
+        file_name = url.split('/')[-1]
 
-        with open(save_path, 'wb') as file:
+        with open(save_path + file_name, 'wb') as file:
             for chunk in response.iter_content(chunk_size=8192):
                 file.write(chunk)
         print(f'File downloaded successfully and saved to {save_path}')
