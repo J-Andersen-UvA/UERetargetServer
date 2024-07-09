@@ -496,13 +496,16 @@ class Retargeter:
     def tick(self, delta_time):
         pass
 
+async def a():
+    await retargeter.start_websocket_server()
 # Example usage
 retargeter = Retargeter()
 retargeter.start()
+loop = asyncio.get_event_loop()
 
 # Keep the program running until user interrupts or signals to stop
 try:
-    asyncio.run(retargeter.start_websocket_server())
+    loop.run_until_complete(a)
     while True:
         # Keep the main thread alive
         unreal.idle()
