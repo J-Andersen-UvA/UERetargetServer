@@ -71,6 +71,8 @@ class Retargeter:
 
     def start(self, host="0.0.0.0", port=8070):
         self.running = True
+        self.thread_local.serverType = "TCP"
+
         # Start the server socket in a separate thread
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.socket.bind((host, port))
@@ -539,10 +541,10 @@ class Retargeter:
 
     def fetch_server_type(self):
         print("Fetching server type...")
-        current_thread = threading.current_thread()
-        server_type = getattr(current_thread, 'thread_local', None).serverType if hasattr(current_thread, 'thread_local') else None
+        server_type = getattr(self.thread_local, 'serverType', None)
         print("Server type:", server_type)
         return server_type
+
 
 
 # Example usage
