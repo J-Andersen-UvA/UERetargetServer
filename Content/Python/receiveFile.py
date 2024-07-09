@@ -56,22 +56,21 @@ def download_file_from_url(url, save_path):
     try:
         response = requests.get(url, stream=True, verify=False)
         response.raise_for_status()
-        file_name = url.split('/')[-1]
 
-        with open(save_path + file_name, 'wb') as file:
+        with open(save_path, 'wb') as file:
             for chunk in response.iter_content(chunk_size=8192):
                 file.write(chunk)
         file.close()
         
         # Check if the file was downloaded successfully
-        if not os.path.isfile(save_path + file_name):
-            print(f"File {file_name} not found in the specified path.")
+        if not os.path.isfile(save_path):
+            print(f"{save_path} not found.")
             return False
     except requests.RequestException as e:
         print(f"An error occurred while downloading the file: {e}")
         return False
     finally:
-        print(f'File downloaded successfully and saved to {save_path + file_name}')
+        print(f'File downloaded successfully and saved to {save_path}')
         return True
 
 if __name__ == "__main__":

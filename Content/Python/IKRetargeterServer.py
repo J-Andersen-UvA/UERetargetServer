@@ -323,8 +323,9 @@ class Retargeter:
             destination_path = self.import_path
 
         print(f"Downloading file from URL: {url}")
-        if receiveFile.download_file_from_url(url, destination_path):
-            self.send_response(self.current_connection, f"File downloaded successfully path({destination_path}).")
+        file_name = url.split('/')[-1]
+        if receiveFile.download_file_from_url(url, destination_path + file_name):
+            self.send_response(self.current_connection, f"File downloaded successfully path({destination_path + file_name}).")
         else:
             self.send_response(self.current_connection, "Failed to download file.")
 
