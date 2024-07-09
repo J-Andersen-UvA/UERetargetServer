@@ -542,6 +542,14 @@ class Retargeter:
         current_thread = threading.current_thread()
         server_type = getattr(current_thread, 'thread_local', None).serverType if hasattr(current_thread, 'thread_local') else None
         print("Server type:", server_type)
+
+        def print_thread_attributes():
+            current_thread = threading.current_thread()
+            attributes = dir(current_thread)
+            for attribute in attributes:
+                print(attribute)
+
+        print_thread_attributes()
         return server_type
 
 
