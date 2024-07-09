@@ -250,6 +250,9 @@ class Retargeter:
         receive_thread.start()
 
     def handle_fbx_receive(self, connection, filename, host='0.0.0.0'):
+        thread_local = threading.local()
+        thread_local.serverType = "TCP"
+
         port = self.get_free_port()
         if port is None:
             self.send_response(connection, "No available port for file transfer.")
@@ -451,6 +454,8 @@ class Retargeter:
         """
         This method handles client data.
         """
+        thread_local = threading.local()
+        thread_local.serverType = "TCP"
         try:
             while True:
                 data = connection.recv(1024)
@@ -466,6 +471,9 @@ class Retargeter:
     # We will use this method to handle WebSocket data
     def start_websocket_server(self, host="0.0.0.0", port=8069):
         def run_server():
+            thread_local = threading.local()
+            thread_local.serverType = "WebSocket"
+
             loop = asyncio.new_event_loop()
             asyncio.set_event_loop(loop)
             
