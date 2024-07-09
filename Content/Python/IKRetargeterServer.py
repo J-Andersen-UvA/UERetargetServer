@@ -122,6 +122,7 @@ class Retargeter:
                 args = dequeued_item.args
                 connection = dequeued_item.connection
                 self.thread_local.serverType = dequeued_item.connection_type
+                print("Server type:", self.thread_local.serverType)
                 unreal.log(f"Calling function {func.__name__} with arguments: {args}")
             else:
                 # Handle unexpected case where dequeued_item is not an instance of QueueItem
