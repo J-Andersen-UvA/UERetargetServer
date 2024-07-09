@@ -12,7 +12,6 @@ import receiveFile
 import functools
 import os
 import websockets
-import asyncio
 
 class Retargeter:
     """
@@ -80,7 +79,9 @@ class Retargeter:
         # Start listening for clients in a separate daemon thread
         listen_thread = threading.Thread(target=self.listen_clients, daemon=True)
         listen_thread.start()
-    
+        websockets_thread = threading.Thread(target=self.start_websocket_server, daemon=True)
+        websockets_thread.start()
+
     def stop(self):
         self.running = False
         # Close the server socket
@@ -461,25 +462,24 @@ class Retargeter:
         # finally:
         #     connection.close()
 
-
     # We will use this method to handle WebSocket data
-    async def start_websocket_server(self, host="0.0.0.0", port=8069):
-        async def handle_websocket(websocket, path):
+    def start_websocket_server(self, host="0.0.0.0", port=8069):
+        def handle_websocket(websocket, path):
             try:
-                async for message in websocket:
-                    await self.handle_websocket_data(message, websocket)
+                for message in websocket:
+                    self.handle_websocket_data(message, websocket)
             except Exception as e:
                 print(f"Error in WebSocket handler: {e}")
 
         start_websocket_server = websockets.serve(handle_websocket, host, port)
-        await start_websocket_server
+        start_websocket_server
         print(f"WebSocket server listening on ws://{host}:{port}")
 
-    async def handle_websocket_data(self, data, websocket):
+    def handle_websocket_data(self, data, websocket):
         try:
             # Handle WebSocket data here
             print(f"Received WebSocket data: {data}")
-            await websocket.send("Received WebSocket data")
+            websocket.send("Received WebSocket data")
         except Exception as e:
             print(f"Error handling WebSocket data: {e}")
 
@@ -496,16 +496,12 @@ class Retargeter:
     def tick(self, delta_time):
         pass
 
-async def a():
-    await retargeter.start_websocket_server()
 # Example usage
 retargeter = Retargeter()
 retargeter.start()
-loop = asyncio.get_event_loop()
 
 # Keep the program running until user interrupts or signals to stop
 try:
-    loop.run_until_complete(a)
     while True:
         # Keep the main thread alive
         unreal.idle()
