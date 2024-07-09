@@ -338,6 +338,7 @@ class Retargeter:
     def handle_default(self, data):
         # Handle default message
         print("(Default) Received message:", data)
+        self.send_response(self.current_connection, "(Default) Received message: " + data)
     
     def send_file(self, filepath, connection=None):
         if connection is None:
