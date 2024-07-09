@@ -471,8 +471,8 @@ class Retargeter:
             except Exception as e:
                 print(f"Error in WebSocket handler: {e}")
 
-        start_websocket_server = websockets.serve(handle_websocket, host, port)
-        start_websocket_server
+        start_websocket_thread = threading.Thread(target=websockets.serve, args=(handle_websocket, host, port))
+        start_websocket_thread.start()
         print(f"WebSocket server listening on ws://{host}:{port}")
 
     def handle_websocket_data(self, data, websocket):
