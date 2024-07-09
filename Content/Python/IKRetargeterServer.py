@@ -164,9 +164,9 @@ class Retargeter:
         print("Importing FBX file:", args[0])
 
         if len(args) > 1:
-            self.queue.enqueue(skeletalMeshImporter.import_fbx, [args[0], args[1]])
+            self.queue.enqueue(skeletalMeshImporter.import_fbx, [args[0], args[1]], connection_type=self.fetch_server_type())
         else:
-            self.queue.enqueue(skeletalMeshImporter.import_fbx, [args[0]])
+            self.queue.enqueue(skeletalMeshImporter.import_fbx, [args[0]], connection_type=self.fetch_server_type())
 
     def import_fbx_animation(self, args):
         args = args.split(',')
@@ -177,12 +177,12 @@ class Retargeter:
 
         # Import FBX animation file into Unreal Engine
         print("Importing FBX animation file:", args[0])
-        self.queue.enqueue(animationImporter.import_fbx_animation, args)
+        self.queue.enqueue(animationImporter.import_fbx_animation, args, connection_type=self.fetch_server_type())
 
     def create_ik_rig(self, mesh_name):
         # Create IK rig for the given mesh
         print("Going to create IK Rig for:", mesh_name)
-        self.queue.enqueue(ikRigCreator.createIKRig, [mesh_name])
+        self.queue.enqueue(ikRigCreator.createIKRig, [mesh_name], connection_type=self.fetch_server_type())
 
     def retarget_ik_rigs(self, args):
         args = args.split(',')
@@ -195,7 +195,7 @@ class Retargeter:
         rtg_name = args[2]
 
         print("Retargeting IK rigs:", source_rig_path, target_rig_path)
-        self.queue.enqueue(IKRetargeter.create_retargeter, [source_rig_path, target_rig_path, rtg_name])
+        self.queue.enqueue(IKRetargeter.create_retargeter, [source_rig_path, target_rig_path, rtg_name], connection_type=self.fetch_server_type())
 
     def fetch_ik_rigs(self, args):
         args = args.split(',')
@@ -205,7 +205,7 @@ class Retargeter:
 
         print("Fetching IK rigs")
         print(args)
-        self.queue.enqueue(fetchUEInfo.fetch_ik_rigs, args)
+        self.queue.enqueue(fetchUEInfo.fetch_ik_rigs, args, connection_type=self.fetch_server_type())
 
     def fetch_retargets(self, args):
         args = args.split(',')
@@ -215,11 +215,11 @@ class Retargeter:
 
         print("Fetching IK retargeters")
         print(args)
-        self.queue.enqueue(fetchUEInfo.fetch_retargets, args)
+        self.queue.enqueue(fetchUEInfo.fetch_retargets, args, connection_type=self.fetch_server_type())
 
     # Function to check if an asset exists
     def asset_exists(self, asset_path):
-        self.queue.enqueue(unreal.EditorAssetLibrary.does_asset_exist, [asset_path])
+        self.queue.enqueue(unreal.EditorAssetLibrary.does_asset_exist, [asset_path], connection_type=self.fetch_server_type())
 
     def retarget_animation(self, args):
         args = args.split(',', 1)
@@ -231,7 +231,7 @@ class Retargeter:
         animation_path = args[1]
 
         print("Retargeting animation:", retargeter_path, animation_path)
-        self.queue.enqueue(IKRetargeter.retarget_animations, [retargeter_path, animation_path])
+        self.queue.enqueue(IKRetargeter.retarget_animations, [retargeter_path, animation_path], connection_type=self.fetch_server_type())
 
     def export_fbx_animation(self, args):
         if not isinstance(args, list):
@@ -242,7 +242,7 @@ class Retargeter:
             raise ValueError("Invalid message format, missing arguments. Expecting: animation_asset_path, export_path, name(optional), ascii(optional), force_front_x_axis(optional)")
 
         print("Exporting animation to FBX:", args[0], args[1])
-        self.queue.enqueue(animationExporter.export_animation, args, connection=self.current_connection)
+        self.queue.enqueue(animationExporter.export_animation, args, connection=self.current_connection, connection_type=self.fetch_server_type())
 
     def receive_fbx(self, filename, connection=None):
         if connection is None:
@@ -283,7 +283,7 @@ class Retargeter:
             return None
 
     def rig_retarget_send_queue(self, args):
-        self.queue.enqueue(self.rig_retarget_send, [args])
+        self.queue.enqueue(self.rig_retarget_send, [args], connection_type=self.fetch_server_type())
 
     def rig_retarget_send(self, source_mesh_path, target_mesh_path, animation_path):
         # TODO: Test this function
