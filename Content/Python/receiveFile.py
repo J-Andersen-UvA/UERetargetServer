@@ -60,18 +60,17 @@ def download_file_from_url(url, save_path):
         with open(save_path, 'wb') as file:
             for chunk in response.iter_content(chunk_size=8192):
                 file.write(chunk)
-        file.close()
-        
+
         # Check if the file was downloaded successfully
-        if not os.path.isfile(save_path):
-            print(f"{save_path} not found.")
+        if os.path.isfile(save_path):
+            print(f'File downloaded successfully and saved to {save_path}')
+            return True
+        else:
+            print(f"Failed to download the file. {save_path} not found.")
             return False
     except requests.RequestException as e:
         print(f"An error occurred while downloading the file: {e}")
         return False
-    finally:
-        print(f'File downloaded successfully and saved to {save_path}')
-        return True
 
 if __name__ == "__main__":
     import_path = "/path/to/save/files/"  # Adjust to your import path
