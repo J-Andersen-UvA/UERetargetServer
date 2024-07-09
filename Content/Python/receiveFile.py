@@ -57,6 +57,10 @@ def download_file_from_url(url, save_path):
         response = requests.get(url, stream=True, verify=False)
         response.raise_for_status()
 
+        # If the file already exists, delete it
+        if os.path.isfile(save_path):
+            os.remove(save_path)
+
         with open(save_path, 'wb') as file:
             for chunk in response.iter_content(chunk_size=8192):
                 file.write(chunk)
