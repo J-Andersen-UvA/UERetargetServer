@@ -503,6 +503,7 @@ class Retargeter:
 
             # Run the asyncio event loop
             loop.run_until_complete(start_server())
+            loop.run_forever()
 
         # Start the server in a new thread
         server_thread = threading.Thread(target=run_server)
