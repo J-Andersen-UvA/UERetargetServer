@@ -530,11 +530,15 @@ class Retargeter:
     def send_response(self, connection, message, no_close=False):
         if self.fetch_server_type() == "WebSocket":
             loop = asyncio.get_event_loop()
-            if loop.is_running():
-                # Use asyncio.ensure_future to schedule the coroutine in the current loop
+            
+            # Check if we're in the main thread and if the loop is already running
+            if threading.current_thread() is threading.main_thread() and loop.is_running():
+                # Schedule the coroutine to be run in the current loop
                 asyncio.ensure_future(self.send_response_websocket(connection, message, no_close))
             else:
-                # Run the coroutine in the loop
+                # Get the current running loop or create a new one
+                loop = asyncio.new_event_loop()
+                asyncio.set_event_loop(loop)
                 loop.run_until_complete(self.send_response_websocket(connection, message, no_close))
             return
 
