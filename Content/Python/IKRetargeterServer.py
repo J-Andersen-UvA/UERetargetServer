@@ -536,12 +536,16 @@ class Retargeter:
                 # Schedule the coroutine to be run in the current loop
                 asyncio.ensure_future(self.send_response_websocket(connection, message, no_close))
             else:
-                # Get the current running loop or create a new one
-                loop = asyncio.new_event_loop()
-                asyncio.set_event_loop(loop)
-                loop.run_until_complete(self.send_response_websocket(connection, message, no_close))
+                # If we are not in the main thread, or the loop is not running, use the event loop of the connection
+                try:
+                    connection_loop = connection.loop
+                    asyncio.run_coroutine_threadsafe(self.send_response_websocket(connection, message, no_close), connection_loop)
+                except AttributeError:
+                    # Fallback to creating a new loop if no loop is found on connection
+                    loop = asyncio.new_event_loop()
+                    asyncio.set_event_loop(loop)
+                    loop.run_until_complete(self.send_response_websocket(connection, message, no_close))
             return
-
         try:
             connection.sendall(message.encode('utf-8'))
         except Exception as e:
