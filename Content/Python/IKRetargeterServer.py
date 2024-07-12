@@ -335,6 +335,15 @@ class Retargeter:
 
         print(f"Downloading file from URL: {url}")
         file_name = url.split('/')[-1]
+
+        if file_name == "":
+            self.send_response(self.current_connection, "Invalid URL format, unable to extract file name.")
+            raise ValueError("Invalid URL format, unable to extract file name.")
+        if os.path.exists(destination_path + file_name):
+            print(f"File already exists at path({destination_path + file_name}).")
+            self.send_response(self.current_connection, f"File already exists at path({destination_path + file_name}).")
+            return
+
         if receiveFile.download_file_from_url(url, destination_path + file_name):
             self.send_response(self.current_connection, f"File downloaded successfully path({destination_path + file_name}).")
         else:
@@ -559,9 +568,7 @@ class Retargeter:
         pass
 
     def fetch_server_type(self):
-        print("Fetching server type...")
         server_type = getattr(self.thread_local, 'serverType', None)
-        print("Server type:", server_type)
         return server_type
 
 
