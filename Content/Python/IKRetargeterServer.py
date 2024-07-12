@@ -529,7 +529,11 @@ class Retargeter:
 
     def send_response(self, connection, message, no_close=False):
         if self.fetch_server_type() == "WebSocket":
-            asyncio.run(self.send_response_websocket(connection, message, no_close))
+            loop = asyncio.get_event_loop()
+            if loop.is_running():
+                asyncio.run_coroutine_threadsafe(self.send_response_websocket(connection, message, no_close), loop)
+            else:
+                loop.run_until_complete(self.send_response_websocket(connection, message, no_close))
             return
 
         try:
@@ -540,6 +544,7 @@ class Retargeter:
             if not no_close:
                 print("Closing connection")
                 connection.close()
+
 
     def tick(self, delta_time):
         pass
