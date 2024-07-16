@@ -315,6 +315,7 @@ class Retargeter:
             target_rig_path = fetchUEInfo.fetch_rig_with_name(target_rig_name, "/Game/IKRigs")
 
         retarget_path = fetchUEInfo.fetch_retargets_with_name(retargeter_name, "/Game/Retargets")
+        print("Retargeter path:", retarget_path)
         # Check if the retargeter already exists
         if not retarget_path:
             print("Creating retargeter:", source_rig_path, target_rig_path, retargeter_name)
