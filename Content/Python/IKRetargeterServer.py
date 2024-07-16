@@ -323,8 +323,11 @@ class Retargeter:
                 raise ValueError(f"Failed to create retargeter at path /Game/Retargets/{retargeter_name}")
             retarget_path = fetchUEInfo.fetch_retargets_with_name(retargeter_name, "/Game/Retargets")
 
-        IKRetargeter.retarget_animations(retarget_path, animation_path)
-        self.export_fbx_animation([animation_path, self.export_path, f"{animation_name}_{source_rig_name}_to_{target_rig_name}"], url=url)
+        result = IKRetargeter.retarget_animations(retarget_path, animation_path)
+        if not result[0]:
+            raise ValueError(f"Failed to retarget animation at path {animation_path}")
+
+        self.export_fbx_animation([animation_path, self.export_path, result[1]], url=url)
 
     def fetch_files(self, folder_path):
         # Fetch all files in the specified folder
