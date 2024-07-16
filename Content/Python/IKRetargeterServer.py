@@ -327,7 +327,7 @@ class Retargeter:
         if not result[0]:
             raise ValueError(f"Failed to retarget animation at path {animation_path}")
 
-        self.export_fbx_animation([animation_path, self.export_path, result[1]], url=url)
+        self.export_fbx_animation([f"/Game/Anims/RetargetedAnimations/{result[1]}", self.export_path, result[1]], url=url)
 
     def fetch_files(self, folder_path):
         # Fetch all files in the specified folder
